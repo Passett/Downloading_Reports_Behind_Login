@@ -84,14 +84,14 @@ def move(destination):
 cleanFolder(attachment_destination)
 
 #Download 1st report
-#Login and go to report page
+#Login and download Ft. Myers Report
 login(Johnny_username_1, Johnny_password)
 time.sleep(5)
 part1="https://portal.thompsoncs.net/documents/reports/E9A1B06B-D7AE-4379-B40F-91B375E5E146/"
 part2=date.today().strftime("%#m.%#d.%y")
-part3="_Ft Myers Beach Daily Report.pdf"
-Lee_Listing=(part1+part2+part3)
-driver.get(Lee_Listing)
+part3="_Fort Myers Beach Daily Report.pdf"
+Myers_Listing=(part1+part2+part3)
+driver.get(Myers_Listing)
 time.sleep(10)
 move(attachment_destination)
 print("1st file downloaded")
@@ -101,14 +101,14 @@ logout_button=driver.find_element(By.XPATH,'/html/body/form/div[4]/div[1]/div[3]
 logout_button.click()
 
 #Download 2nd Report
-#Login and download report
+#Login and download Sanibel report
 login(Johnny_username_3, Johnny_password)
 time.sleep(10)
 part1="https://portal.thompsoncs.net/documents/reports/9E9BF0D9-A98F-4F4D-B160-EB16D1062528/"
 part2=date.today().strftime("%#m.%#d.%y")
 part3="_Sanibel Daily Report.pdf"
-Lee_Listing=(part1+part2+part3)
-driver.get(Lee_Listing)
+Sanibel_Listing=(part1+part2+part3)
+driver.get(Sanibel_Listing)
 time.sleep(10)
 move(attachment_destination)
 print("2nd file downloaded")
@@ -118,7 +118,7 @@ logout_button=driver.find_element(By.XPATH,'/html/body/form/div[4]/div[1]/div[3]
 logout_button.click()
 
 #Download 3rd Report
-#Login and go to report page
+#Login and download Lee report
 login(Johnny_username_2, Johnny_password)
 driver.get("https://portal.thompsoncs.net/reports.aspx")
 time.sleep(5)
@@ -144,7 +144,7 @@ attachment3=attachment_destination+"/"+fileNames[2]
 print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'richard.passett@em.myflorida.com'
+mail.To = 'shoobidywhoobidy@doo.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
