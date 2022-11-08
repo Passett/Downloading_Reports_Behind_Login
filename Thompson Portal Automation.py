@@ -181,7 +181,7 @@ attachment3=attachment_destination+"/"+fileNames[2]
 print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'richard.passett@em.myflorida.com'
+mail.To = 'aintnosunshine@whenshesgone.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
