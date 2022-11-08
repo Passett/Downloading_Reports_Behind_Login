@@ -1,5 +1,5 @@
 #This script was written by Richard Passett and downloads the files for Johnny from the Thompson Portal and sends them to Buck and Garrett. 
-#It currently grabs 3 files using 3 different logins.
+#It currently grabs 3 files using 3 different logins. 
 
 #Import dependencies
 import time
@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 import shutil
 import keyring
 from datetime import date
@@ -23,6 +24,10 @@ Johnny_password=keyring.get_password("TP", "Password")
 #Directories used for script
 holding_dir=r'J:\Admin & Plans Unit\Recovery Systems\3. Projects\Johnny_Automation\Holding_Folder'
 attachment_destination=r'J:\Admin & Plans Unit\Recovery Systems\3. Projects\Johnny_Automation\Attachments'
+
+#Variables for choosing dropdown options
+sanibel="san"
+Myers="ft"
 
 #Use webdriver for Chrome, set where you want the CSVs to download to, add other options/preferences as desired, point to where you have the driver downloaded, and set the driver to a variable.
 #If you want to see what is happening in the browser, comment out the headless and disable-software-rasterizer options
@@ -65,8 +70,8 @@ def move(destination):
     while len(os.listdir(holding_dir))==0: 
         time.sleep(10)
         counter+=counter
-        if counter==8:
-            sys.exit("Today's data hasn't been uploaded yet. Please try again later.")
+        if counter==12:
+            sys.exit("Today's data hasn't been uploaded yet for Lee County. Please try again later.")
     for item in os.listdir(holding_dir):
         file_name=holding_dir+"/"+item
         if item.endswith(".tmp"):
@@ -80,42 +85,59 @@ def move(destination):
             os.remove(file_name) #Delete original file
     time.sleep(5)
 
+def logout():
+    logout_button=driver.find_element(By.XPATH,'/html/body/form/div[4]/div[1]/div[3]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td[63]/div/table/tbody/tr/td[2]')
+    logout_button.click()
+
 #Prep Folder
 cleanFolder(attachment_destination)
 
 #Download 1st report
 #Login and download Ft. Myers Report
 login(Johnny_username_1, Johnny_password)
+driver.get("https://portal.thompsoncs.net/tickets.aspx")
 time.sleep(5)
-part1="https://portal.thompsoncs.net/documents/reports/E9A1B06B-D7AE-4379-B40F-91B375E5E146/"
-part2=date.today().strftime("%#m.%#d.%y")
-part3="_Fort Myers Beach Daily Report.pdf"
-Myers_Listing=(part1+part2+part3)
-driver.get(Myers_Listing)
-time.sleep(10)
-move(attachment_destination)
-print("1st file downloaded")
 
-#Log out of portal
-logout_button=driver.find_element(By.XPATH,'/html/body/form/div[4]/div[1]/div[3]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td[63]/div/table/tbody/tr/td[2]')
-logout_button.click()
+#Choose ft myers
+dropdown_button=driver.find_element(By.NAME,'ctl00$MainContent$ddlFilterLoadClient')
+dropdown_button.send_keys(Myers)
+time.sleep(1)
+dropdown_button.send_keys(Keys.ENTER)
+time.sleep(8)
+
+#Click filter button
+filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
+filter_button.click()
+time.sleep(8)
+
+#Click "Export to Excel" button and move download to correct folder
+download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
+download_button.click()
+move(attachment_destination)
+logout() #Log out of portal
 
 #Download 2nd Report
 #Login and download Sanibel report
 login(Johnny_username_3, Johnny_password)
-time.sleep(10)
-part1="https://portal.thompsoncs.net/documents/reports/9E9BF0D9-A98F-4F4D-B160-EB16D1062528/"
-part2=date.today().strftime("%#m.%#d.%y")
-part3="_Sanibel Daily Report.pdf"
-Sanibel_Listing=(part1+part2+part3)
-driver.get(Sanibel_Listing)
-time.sleep(10)
-move(attachment_destination)
-print("2nd file downloaded")
+driver.get("https://portal.thompsoncs.net/tickets.aspx")
+time.sleep(8)
 
-#Log out of portal
-logout_button=driver.find_element(By.XPATH,'/html/body/form/div[4]/div[1]/div[3]/table/tbody/tr/td/table/tbody/tr/td/table/tbody/tr/td[63]/div/table/tbody/tr/td[2]')
-logout_button.click()
+#Choose sanibel
+dropdown_button=driver.find_element(By.NAME,'ctl00$MainContent$ddlFilterLoadClient')
+dropdown_button.send_keys(sanibel)
+dropdown_button.send_keys(Keys.ENTER)
+time.sleep(2)
+
+#Click filter button
+filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
+filter_button.click()
+time.sleep(10)
+
+#Click "Export to Excel" button and move download to correct folder
+download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
+download_button.click()
+move(attachment_destination)
+logout() #Log out of portal
 
 #Download 3rd Report
 #Login and download Lee report
@@ -144,7 +166,7 @@ attachment3=attachment_destination+"/"+fileNames[2]
 print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'shoobidywhoobidy@doo.com'
+mail.To = 'richard.passett@em.myflorida.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
