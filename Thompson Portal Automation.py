@@ -12,6 +12,7 @@ import keyring
 from datetime import date
 import win32com.client
 import os
+import sys
 
 #Password variables for Thompson Portal
 Johnny_username_1=keyring.get_password("TP", "Username_1")
@@ -65,8 +66,12 @@ def cleanFolder(destination):
         os.remove(file.path)    
 
 def move(destination):
+    counter=1
     while len(os.listdir(holding_dir))==0: 
         time.sleep(10)
+        counter+=counter
+        if counter==8:
+            sys.exit("Today's data hasn't been updated yet. Please try again later.")
     for item in os.listdir(holding_dir):
         file_name=holding_dir+"/"+item
         if item.endswith(".tmp"):
@@ -144,7 +149,7 @@ attachment3=attachment_destination+"/"+fileNames[2]
 print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'ShoobyWhooby@doo.com'
+mail.To = 'richard.passett@em.myflorida.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
