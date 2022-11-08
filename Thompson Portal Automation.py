@@ -71,7 +71,7 @@ def move(destination):
         time.sleep(10)
         counter+=counter
         if counter==8:
-            sys.exit("Today's data hasn't been updated yet. Please try again later.")
+            sys.exit("Today's data hasn't been uploaded yet. Please try again later.")
     for item in os.listdir(holding_dir):
         file_name=holding_dir+"/"+item
         if item.endswith(".tmp"):
