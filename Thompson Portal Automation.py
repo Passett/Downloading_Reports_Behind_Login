@@ -108,14 +108,21 @@ time.sleep(8)
 
 #Click filter button
 filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
-filter_button.click()
+try:
+    filter_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
 time.sleep(8)
 
 #Click "Export to Excel" button and move download to correct folder
 download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
-download_button.click()
+try:
+    download_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel').click()
 move(attachment_destination)
 logout() #Log out of portal
+print("Ft. Myers report successfully downloaded")
 
 #Download 2nd Report
 #Login and download Sanibel report
@@ -130,15 +137,22 @@ dropdown_button.send_keys(Keys.ENTER)
 time.sleep(2)
 
 #Click filter button
-filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
-filter_button.click()
+filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
+try:
+    filter_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
 time.sleep(10)
 
 #Click "Export to Excel" button and move download to correct folder
 download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
-download_button.click()
+try:
+    download_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel').click()
 move(attachment_destination)
 logout() #Log out of portal
+print("Sanibel report successfully downloaded")
 
 #Download 3rd Report
 #Login and download Lee report
@@ -152,7 +166,7 @@ Lee_Listing=(part1+part2+part3)
 driver.get(Lee_Listing)
 move(attachment_destination)
 driver.close()
-print("3rd file downloaded")
+print("Lee County report successfuly downloaded")
 
 #Assign file names to variables
 fileNames=[]
