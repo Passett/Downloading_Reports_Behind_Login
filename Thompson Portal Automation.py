@@ -24,11 +24,6 @@ Johnny_password=keyring.get_password("TP", "Password")
 holding_dir=r'J:\Admin & Plans Unit\Recovery Systems\3. Projects\Johnny_Automation\Holding_Folder'
 attachment_destination=r'J:\Admin & Plans Unit\Recovery Systems\3. Projects\Johnny_Automation\Attachments'
 
-#Thompson Report Listings used for script
-Accounts_Listing="https://floridapa.org/app/#account/accountlist?o=grantname+asc%2Capplicantname+asc"
-Appeals_Listing="https://floridapa.org/app/#project/projectappeallist?"
-large_project_closeout_listing="https://floridapa.org/app/#project/projectcloseoutlist?filters=%7B%22Program%22%3A%221%22%2C%22Step%22%3A%2226%2C27%2C28%2C570%2C29%2C482%2C485%2C157%2C571%2C183%2C446%2C572%2C159%22%7D&pp=25&o=laststepchangedays+asc"
-
 #Use webdriver for Chrome, set where you want the CSVs to download to, add other options/preferences as desired, point to where you have the driver downloaded, and set the driver to a variable.
 #If you want to see what is happening in the browser, comment out the headless and disable-software-rasterizer options
 options=webdriver.ChromeOptions()
