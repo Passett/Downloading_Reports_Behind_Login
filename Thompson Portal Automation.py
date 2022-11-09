@@ -28,6 +28,7 @@ attachment_destination=r'J:\Admin & Plans Unit\Recovery Systems\3. Projects\John
 #Variables for choosing dropdown options
 sanibel="san"
 Myers="ft"
+lee='le'
 
 #Use webdriver for Chrome, set where you want the CSVs to download to, add other options/preferences as desired, point to where you have the driver downloaded, and set the driver to a variable.
 #If you want to see what is happening in the browser, comment out the headless and disable-software-rasterizer options
@@ -67,12 +68,8 @@ def cleanFolder(destination):
         os.remove(file.path)    
 
 def move(destination):
-    counter=1
     while len(os.listdir(holding_dir))==0: 
         time.sleep(10)
-        counter+=counter
-        if counter==12:
-            sys.exit("Today's data hasn't been uploaded yet for Lee County. Please try again later.")
     for item in os.listdir(holding_dir):
         file_name=holding_dir+"/"+item
         if item.endswith(".tmp"):
@@ -159,14 +156,32 @@ print("Sanibel report successfully downloaded")
 login(Johnny_username_2, Johnny_password)
 driver.get("https://portal.thompsoncs.net/reports.aspx")
 time.sleep(5)
-part1="https://portal.thompsoncs.net/documents/reports/1466F032-87E2-4929-9B4E-63E6C7861DC1/"
-part2=date.today().strftime("%#m.%#d.%y")
-part3="_Lee County Daily Report.pdf"
-Lee_Listing=(part1+part2+part3)
-driver.get(Lee_Listing)
-move(attachment_destination)
+
+#Choose Lee County
+dropdown_button=driver.find_element(By.NAME,'ctl00$MainContent$ddlFilterClient')
+dropdown_button.send_keys(lee)
+time.sleep(1)
+dropdown_button.send_keys(Keys.ENTER)
+time.sleep(8)
+
+#Click filter button
+filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnFilter')
+try:
+    filter_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnFilter').click()
+time.sleep(8)
+
+#Grab today's file and move it to correct folder
+goodies=date.today().strftime("%#m.%#d.%y")
+try:
+    driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % goodies).click()
+    move(attachment_destination)
+except:
+    sys.exit("Today's data hasn't been uploaded yet for Lee County. Please try again later.")
 driver.close()
-print("Lee County report successfuly downloaded")
+print ("Lee County report successfully downloaded")
+print("prepping email")
 
 #Assign file names to variables
 fileNames=[]
@@ -178,10 +193,9 @@ attachment2=attachment_destination+"/"+fileNames[1]
 attachment3=attachment_destination+"/"+fileNames[2]
 
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
-print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'aintnosunshinewhenshes@gone.com; onlydarknessevery@day.com'
+mail.To = 'richard.passett@em.myflorida.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
