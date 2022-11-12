@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 import shutil
 import keyring
-from datetime import date
+from datetime import date, datetime, timedelta
 import win32com.client
 import os
 import sys
@@ -41,8 +41,8 @@ prefs={
     }
 options.add_experimental_option("prefs",prefs) 
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-#options.add_argument("--headless")
-#options.add_argument("--disable-software-rasterizer")
+options.add_argument("--headless")
+options.add_argument("--disable-software-rasterizer")
 options.add_argument("--start-maximized")
 driver_service=Service(r"C:\Users\richardp\Desktop\chromedriver\chromedriver.exe")
 driver=webdriver.Chrome(service=driver_service, options=options)
@@ -89,6 +89,8 @@ def logout():
 
 #Prep Folder
 cleanFolder(attachment_destination)
+
+print("Greetings, we are pulling your reports for you now")
 
 #Download 1st report
 #Login and download Ft. Myers Report
@@ -173,12 +175,28 @@ except:
 time.sleep(8)
 
 #Grab today's file and move it to correct folder
+#Find latest "Document Date" from site and make sure that it equals yesterday's date. If so, download file. 
 goodies=date.today().strftime("%#m.%#d.%y")
-try:
-    driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % goodies).click()
-    move(attachment_destination)
-except:
-    sys.exit("Today's data hasn't been uploaded yet for Lee County. Please try again later.")
+yesterday_prep=date.today()-timedelta(days = 1)
+alternate_goodies=yesterday_prep.strftime("%#m.%#d.%y")
+latest_in_system=driver.find_element(By.XPATH, '/html/body/form/div[4]/div[2]/table/tbody/tr[2]/td/table/tbody/tr/td/table[2]/tbody/tr/td/div/table[2]/tbody/tr[4]/td[3]').text
+start_formatting=latest_in_system.strip()
+check=datetime.strptime(start_formatting, "%m/%d/%Y")
+formatted_check=check.strftime("%#m.%#d.%y")
+
+if alternate_goodies==formatted_check:
+    try:
+        driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % goodies).click()
+        move(attachment_destination)
+    except:
+        try:
+            driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % alternate_goodies).click()
+            move(attachment_destination)
+        except:
+            sys.exit("We ran into an issue locating the pdf report for Lee County due to a format change on Thompson's side. Please investigate or contact Richard.Passett@em.myflorida.com")
+else:
+    sys.exit("Today's data has not yet been updated")
+
 driver.close()
 print ("Lee County report successfully downloaded")
 print("prepping email")
@@ -195,13 +213,13 @@ attachment3=attachment_destination+"/"+fileNames[2]
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'Takeyourdrink@totheend.com; ofthebar@buddy.com'
+mail.To = 'gsauls@debristech.com; bdickinson@debristech.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
 mail.Attachments.Add(attachment1)
 mail.Attachments.Add(attachment2)
 mail.Attachments.Add(attachment3)
-#mail.CC = 'somebody@company.com'
+mail.CC = 'jonathan.blocker@em.myflorida.com'
 mail.Send()
 print("Email sent, task complete!")
