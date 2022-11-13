@@ -137,8 +137,8 @@ if alternate_goodies==formatted_check:
 else:
     sys.exit("Today's data has not yet been updated")
 
-driver.close()
 print ("Lee County report successfully downloaded")
+logout() #Log out of portal
 
 #Download 2nd report
 #Login and download Ft. Myers Report
@@ -198,8 +198,8 @@ try:
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel').click()
 move(attachment_destination)
-logout() #Log out of portal
 print("Sanibel report successfully downloaded")
+driver.close()
 
 print("prepping email")
 
