@@ -92,7 +92,55 @@ cleanFolder(attachment_destination)
 
 print("Greetings, we are pulling your reports for you now")
 
-#Download 1st report
+#Download 1st Report
+#Login and download Lee report
+login(Johnny_username_2, Johnny_password)
+driver.get("https://portal.thompsoncs.net/reports.aspx")
+time.sleep(5)
+
+#Choose Lee County
+dropdown_button=driver.find_element(By.NAME,'ctl00$MainContent$ddlFilterClient')
+dropdown_button.send_keys(lee)
+time.sleep(1)
+dropdown_button.send_keys(Keys.ENTER)
+time.sleep(8)
+
+#Click filter button
+filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnFilter')
+try:
+    filter_button.click()
+except:
+    driver.find_element(By.NAME,'ctl00$MainContent$btnFilter').click()
+time.sleep(8)
+
+#Grab today's file and move it to correct folder
+#Find latest "Document Date" from site and make sure that it equals yesterday's date.
+#If so, download file. If not, stop script and let user know today's file isn't ready yet 
+goodies=date.today().strftime("%#m.%#d.%y")
+yesterday_prep=date.today()-timedelta(days = 1)
+alternate_goodies=yesterday_prep.strftime("%#m.%#d.%y")
+latest_in_system=driver.find_element(By.XPATH, '/html/body/form/div[4]/div[2]/table/tbody/tr[2]/td/table/tbody/tr/td/table[2]/tbody/tr/td/div/table[2]/tbody/tr[4]/td[3]').text
+start_formatting=latest_in_system.strip()
+check=datetime.strptime(start_formatting, "%m/%d/%Y")
+formatted_check=check.strftime("%#m.%#d.%y")
+
+if alternate_goodies==formatted_check:
+    try:
+        driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % goodies).click()
+        move(attachment_destination)
+    except:
+        try:
+            driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % alternate_goodies).click()
+            move(attachment_destination)
+        except:
+            sys.exit("We ran into an issue locating the pdf report for Lee County due to a format change on Thompson's side. Please investigate or contact Richard.Passett@em.myflorida.com")
+else:
+    sys.exit("Today's data has not yet been updated")
+
+driver.close()
+print ("Lee County report successfully downloaded")
+
+#Download 2nd report
 #Login and download Ft. Myers Report
 login(Johnny_username_1, Johnny_password)
 driver.get("https://portal.thompsoncs.net/tickets.aspx")
@@ -123,7 +171,7 @@ move(attachment_destination)
 logout() #Log out of portal
 print("Ft. Myers report successfully downloaded")
 
-#Download 2nd Report
+#Download 3rd Report
 #Login and download Sanibel report
 login(Johnny_username_3, Johnny_password)
 driver.get("https://portal.thompsoncs.net/tickets.aspx")
@@ -153,52 +201,6 @@ move(attachment_destination)
 logout() #Log out of portal
 print("Sanibel report successfully downloaded")
 
-#Download 3rd Report
-#Login and download Lee report
-login(Johnny_username_2, Johnny_password)
-driver.get("https://portal.thompsoncs.net/reports.aspx")
-time.sleep(5)
-
-#Choose Lee County
-dropdown_button=driver.find_element(By.NAME,'ctl00$MainContent$ddlFilterClient')
-dropdown_button.send_keys(lee)
-time.sleep(1)
-dropdown_button.send_keys(Keys.ENTER)
-time.sleep(8)
-
-#Click filter button
-filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnFilter')
-try:
-    filter_button.click()
-except:
-    driver.find_element(By.NAME,'ctl00$MainContent$btnFilter').click()
-time.sleep(8)
-
-#Grab today's file and move it to correct folder
-#Find latest "Document Date" from site and make sure that it equals yesterday's date. If so, download file. 
-goodies=date.today().strftime("%#m.%#d.%y")
-yesterday_prep=date.today()-timedelta(days = 1)
-alternate_goodies=yesterday_prep.strftime("%#m.%#d.%y")
-latest_in_system=driver.find_element(By.XPATH, '/html/body/form/div[4]/div[2]/table/tbody/tr[2]/td/table/tbody/tr/td/table[2]/tbody/tr/td/div/table[2]/tbody/tr[4]/td[3]').text
-start_formatting=latest_in_system.strip()
-check=datetime.strptime(start_formatting, "%m/%d/%Y")
-formatted_check=check.strftime("%#m.%#d.%y")
-
-if alternate_goodies==formatted_check:
-    try:
-        driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % goodies).click()
-        move(attachment_destination)
-    except:
-        try:
-            driver.find_element(By.XPATH, '//a[contains(@href, "%s")]' % alternate_goodies).click()
-            move(attachment_destination)
-        except:
-            sys.exit("We ran into an issue locating the pdf report for Lee County due to a format change on Thompson's side. Please investigate or contact Richard.Passett@em.myflorida.com")
-else:
-    sys.exit("Today's data has not yet been updated")
-
-driver.close()
-print ("Lee County report successfully downloaded")
 print("prepping email")
 
 #Assign file names to variables
