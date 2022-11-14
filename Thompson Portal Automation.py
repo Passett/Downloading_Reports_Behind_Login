@@ -12,7 +12,9 @@ import shutil
 import keyring
 from datetime import date, datetime, timedelta
 import win32com.client
+import pandas as pd
 import os
+import csv
 import sys
 
 #Password variables for Thompson Portal
@@ -201,27 +203,161 @@ move(attachment_destination)
 print("Sanibel report successfully downloaded")
 driver.close()
 
-print("prepping email")
+print("Formatting data for reports")
 
 #Assign file names to variables
 fileNames=[]
 for file in os.listdir(attachment_destination):
     fileNames.append(file)
 
-attachment1=attachment_destination+"/"+fileNames[0]
-attachment2=attachment_destination+"/"+fileNames[1]
-attachment3=attachment_destination+"/"+fileNames[2]
+Lee_PDF=attachment_destination+"/"+fileNames[0]
+Myers_xlsx=attachment_destination+"/"+fileNames[1]
+Sanibel_xlsx=attachment_destination+"/"+fileNames[2]
+
+#Format the xlsx files
+df_Myers_raw=pd.read_excel(Myers_xlsx, sheet_name=0)
+df_Sanibel_raw=pd.read_excel(Sanibel_xlsx, sheet_name=0)
+
+df_M1=df_Myers_raw.astype('str')
+df_S1=df_Sanibel_raw.astype('str')
+
+df_M2=df_M1.apply(lambda x: x.str.replace(',',' '))
+df_S2=df_S1.apply(lambda x: x.str.replace(',',' '))
+
+df_M3=df_M2.replace('nan',"")
+df_S3=df_S2.replace('nan',"")
+
+df_M3['Debris Class'] = df_M3['Debris Class'].replace([' and'], ' &', regex=True)
+df_S3['Debris Class'] = df_S3['Debris Class'].replace([' and'], ' &', regex=True)
+
+#Insert extra, blank columns
+df_M3.insert(0, 'Project ID', 'FtMyersBeachFLIan')
+df_M3.insert(1, 'Trailer Number', '')
+df_M3.insert(2, 'Tare Tons', '')
+df_M3.insert(3, 'Gross Tons', '')
+df_M3.insert(4, 'Outbound Monitor', '')
+df_M3.insert(5, 'Outbound LAT', '')
+df_M3.insert(6, 'Outbound LONG', '')
+df_M3.insert(7, 'Outbound Date', '')
+df_M3.insert(8, 'Outbound Time', '')
+df_M3.insert(9, 'Distance Direct', '')
+df_M3.insert(10, 'Load Picture URL', '')
+df_M3.insert(11, 'Inbound Picture URL', '')
+df_M3.insert(12, 'Outbound Picture URL', '')
+df_M3.insert(13, 'Zone Number', '')
+df_M3.insert(14, 'Zone Name', '')
+df_M3.insert(15, 'Street Number', '')
+df_M3.insert(16, 'Street Name', '')
+df_M3.insert(17, 'Road Owner', '')
+df_M3.insert(18, 'Route ID', '')
+df_M3.insert(19, 'Outbound Site Number', '')
+df_M3.insert(20, 'Outbound Site Name', '')
+
+df_S3.insert(0, 'Project ID', 'SanibelIslandFLIan')
+df_S3.insert(1, 'Trailer Number', '')
+df_S3.insert(2, 'Tare Tons', '')
+df_S3.insert(3, 'Gross Tons', '')
+df_S3.insert(4, 'Outbound Monitor', '')
+df_S3.insert(5, 'Outbound LAT', '')
+df_S3.insert(6, 'Outbound LONG', '')
+df_S3.insert(7, 'Outbound Date', '')
+df_S3.insert(8, 'Outbound Time', '')
+df_S3.insert(9, 'Distance Direct', '')
+df_S3.insert(10, 'Load Picture URL', '')
+df_S3.insert(11, 'Inbound Picture URL', '')
+df_S3.insert(12, 'Outbound Picture URL', '')
+df_S3.insert(13, 'Zone Number', '')
+df_S3.insert(14, 'Zone Name', '')
+df_S3.insert(15, 'Street Number', '')
+df_S3.insert(16, 'Street Name', '')
+df_S3.insert(17, 'Road Owner', '')
+df_S3.insert(18, 'Route ID', '')
+df_S3.insert(19, 'Outbound Site Number', '')
+df_S3.insert(20, 'Outbound Site Name', '')
+
+#Rename column headers
+dict={
+    "Ticket No":"Ticket Number",
+    "Debris Class":"Debris Type",
+    "Capacity":"Truck Capacity",
+    "Load %":"Percent Full",
+    "Cubic Yards":"Pay Volume",
+    "Weight":"Net Tons",
+    "Truck No":"Truck Number",
+    "Subcontractor":"Sub Contractor Code",
+    "Load Latitude":"Load Lat",
+    "Load Longitude":"Load Long",
+    "Disposal Monitor":"Inbound Monitor",
+    "Disposal Latitude":"Inbound LAT",
+    "Disposal Longitude":"Inbound LONG",
+    "Disposal Date":"Inbound Date",
+    "Disposal Time":"Inbound Time",
+    "Mileage":"Distance Haul Route",
+    "Disposal Site":"Disposal Site ID"
+    }
+
+df_M3.rename(columns=dict, inplace=True)
+df_S3.rename(columns=dict, inplace=True)
+
+#Output only columns wanted, and in specified order
+df_M4=df_M3[['Project ID', 'Ticket Number', 'Debris Type', 'Truck Capacity', 'Percent Full', 'Pay Volume', 'Gross Tons', 'Tare Tons', 'Net Tons', 'Truck Number', 'Trailer Number', 'Sub Contractor Code', 'Load Monitor', 'Load Lat', 'Load Long', 'Load Date', 'Load Time', 'Disposal Site ID', 'Inbound Monitor', 'Inbound LAT', 'Inbound LONG', 'Inbound Date', 'Inbound Time', 'Outbound Monitor', 'Outbound LAT', 'Outbound LONG', 'Outbound Date', 'Outbound Time', 'Distance Direct', 'Distance Haul Route', 'Load Picture URL', 'Inbound Picture URL', 'Outbound Picture URL', 'Zone Number', 'Zone Name', 'Street Number', 'Street Name', 'Road Owner', 'Route ID', 'Outbound Site Number', 'Outbound Site Name']]
+df_S4=df_S3[['Project ID', 'Ticket Number', 'Debris Type', 'Truck Capacity', 'Percent Full', 'Pay Volume', 'Gross Tons', 'Tare Tons', 'Net Tons', 'Truck Number', 'Trailer Number', 'Sub Contractor Code', 'Load Monitor', 'Load Lat', 'Load Long', 'Load Date', 'Load Time', 'Disposal Site ID', 'Inbound Monitor', 'Inbound LAT', 'Inbound LONG', 'Inbound Date', 'Inbound Time', 'Outbound Monitor', 'Outbound LAT', 'Outbound LONG', 'Outbound Date', 'Outbound Time', 'Distance Direct', 'Distance Haul Route', 'Load Picture URL', 'Inbound Picture URL', 'Outbound Picture URL', 'Zone Number', 'Zone Name', 'Street Number', 'Street Name', 'Road Owner', 'Route ID', 'Outbound Site Number', 'Outbound Site Name']]
+
+#Create DF for information they want above CSV, with the idea of adding this DF on top of our standard DF
+yesterday_date=date.today()-timedelta(days = 1)
+formatted_yesterday_date=yesterday_date.strftime("%#m/%#d/%Y")
+
+M_data_above_header = {'Thompson Consulting':  ['FtMyersBeachFLIan', 'Debris Tickets', formatted_yesterday_date],
+        '': ['', '1', '']
+        }
+
+S_data_above_header = {'Thompson Consulting':  ['SanibelIslandFLIan', 'Debris Tickets', formatted_yesterday_date],
+        '': ['', '1', '']
+        }
+
+M_above_df = pd.DataFrame(M_data_above_header)
+S_above_df = pd.DataFrame(S_data_above_header)
+
+#Write CSVs that contains actual DFs, along with extra stuff requested above headers
+with open((attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(M_above_df.columns)
+    for index,row in M_above_df.iterrows():
+       writer.writerow(row)
+    
+    writer.writerow(df_M4.columns)
+    for index1,row1 in df_M4.iterrows():
+       writer.writerow(row1)
+
+with open((attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
+    writer = csv.writer(f)
+    writer.writerow(S_above_df.columns)
+    for index,row in S_above_df.iterrows():
+       writer.writerow(row)
+    
+    writer.writerow(df_S4.columns)
+    for index1,row1 in df_S4.iterrows():
+       writer.writerow(row1)
+
+#Commented out, but below is how we would write to CSVs if we didn't need the extra stuff above the headers
+# df_M4.to_csv(attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv', index=False)
+# df_S4.to_csv(attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv', index=False)
+
+Myers_csv=attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'
+Sanibel_csv=attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'
+
+print("prepping email")
 
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
 mail.To = 'gsauls@debristech.com; bdickinson@debristech.com'
-mail.Subject = 'Daily Debris Reports'
-mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
+mail.Subject = 'Testy-Westy Formatted Daily Debris Reports'
+mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports. Testing formatting.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
-mail.Attachments.Add(attachment1)
-mail.Attachments.Add(attachment2)
-mail.Attachments.Add(attachment3)
+mail.Attachments.Add(Lee_PDF)
+mail.Attachments.Add(Myers_csv)
+mail.Attachments.Add(Sanibel_csv)
 mail.CC = 'jonathan.blocker@em.myflorida.com'
 mail.Send()
 print("Email sent, task complete!")
