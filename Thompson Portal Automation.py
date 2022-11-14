@@ -351,13 +351,13 @@ print("prepping email")
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'gsauls@debristech.com; bdickinson@debristech.com'
+mail.To = 'Sturgill.Simposon@metamodernsounds.com; Pooh.Shiesty@burrr.com'
 mail.Subject = 'Testy-Westy Formatted Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports. Testing formatting.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
 mail.Attachments.Add(Lee_PDF)
 mail.Attachments.Add(Myers_csv)
 mail.Attachments.Add(Sanibel_csv)
-mail.CC = 'jonathan.blocker@em.myflorida.com'
+mail.CC = 'Shakey.Graves@ifnotforyou.com'
 mail.Send()
 print("Email sent, task complete!")
