@@ -319,6 +319,7 @@ M_above_df = pd.DataFrame(M_data_above_header)
 S_above_df = pd.DataFrame(S_data_above_header)
 
 #Write CSVs that contains actual DFs, along with extra stuff requested above headers
+#Ft Myers
 with open((attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(M_above_df.columns)
@@ -328,7 +329,8 @@ with open((attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().s
     writer.writerow(df_M4.columns)
     for index1,row1 in df_M4.iterrows():
        writer.writerow(row1)
-
+    
+#Sanibel
 with open((attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(S_above_df.columns)
@@ -352,8 +354,8 @@ print("prepping email")
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
 mail.To = 'Sturgill.Simposon@metamodernsounds.com; Pooh.Shiesty@burrr.com'
-mail.Subject = 'Testy-Westy Formatted Daily Debris Reports'
-mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports. Testing formatting.<br><br>Sincerely,<br><br>Recovery</h3>'
+mail.Subject = 'Daily Debris Reports'
+mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
 mail.Attachments.Add(Lee_PDF)
 mail.Attachments.Add(Myers_csv)
