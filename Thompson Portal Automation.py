@@ -231,7 +231,7 @@ df_M3['Debris Class'] = df_M3['Debris Class'].replace([' and'], ' &', regex=True
 df_S3['Debris Class'] = df_S3['Debris Class'].replace([' and'], ' &', regex=True)
 
 #Insert extra, blank columns
-df_M3.insert(0, 'Project ID', 'FtMyersBeachFLIan')
+df_M3.insert(0, 'Project ID', 'FortMyersBeachFLIan')
 df_M3.insert(1, 'Trailer Number', '')
 df_M3.insert(2, 'Tare Tons', '')
 df_M3.insert(3, 'Gross Tons', '')
@@ -307,7 +307,7 @@ df_S4=df_S3[['Project ID', 'Ticket Number', 'Debris Type', 'Truck Capacity', 'Pe
 yesterday_date=date.today()-timedelta(days = 1)
 formatted_yesterday_date=yesterday_date.strftime("%#m/%#d/%Y")
 
-M_data_above_header = {'Thompson Consulting':  ['FtMyersBeachFLIan', 'Debris Tickets', formatted_yesterday_date],
+M_data_above_header = {'Thompson Consulting':  ['FortMyersBeachFLIan', 'Debris Tickets', formatted_yesterday_date],
         '': ['', '1', '']
         }
 
@@ -319,7 +319,7 @@ M_above_df = pd.DataFrame(M_data_above_header)
 S_above_df = pd.DataFrame(S_data_above_header)
 
 #Write CSVs that contains actual DFs, along with extra stuff requested above headers
-#Ft Myers
+#Ft. Myers
 with open((attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(M_above_df.columns)
@@ -329,7 +329,7 @@ with open((attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().s
     writer.writerow(df_M4.columns)
     for index1,row1 in df_M4.iterrows():
        writer.writerow(row1)
-    
+
 #Sanibel
 with open((attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'), 'w', newline='') as f:
     writer = csv.writer(f)
@@ -347,19 +347,18 @@ with open((attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime
 
 Myers_csv=attachment_destination+'\\Ft Myers Beach LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'
 Sanibel_csv=attachment_destination+'\\Sanibel LoadTickets_'+date.today().strftime("%m%d%Y")+'.csv'
-
 print("prepping email")
 
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'Sturgill.Simposon@metamodernsounds.com; Pooh.Shiesty@burrr.com'
+mail.To = 'whoopityscoop@scoopitywhoop.com; whoopdiscoop@scoopdiwhoop.com'
 mail.Subject = 'Daily Debris Reports'
-mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>Recovery</h3>'
+mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>FDEM Recovery Bureau</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
 mail.Attachments.Add(Lee_PDF)
 mail.Attachments.Add(Myers_csv)
 mail.Attachments.Add(Sanibel_csv)
-mail.CC = 'Shakey.Graves@ifnotforyou.com'
+mail.CC = 'someone@somewhere.com'
 mail.Send()
 print("Email sent, task complete!")
