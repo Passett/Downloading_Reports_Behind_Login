@@ -108,8 +108,8 @@ dropdown_button.send_keys(Keys.ENTER)
 time.sleep(8)
 
 #Click filter button
-filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnFilter')
 try:
+    filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnFilter')
     filter_button.click()
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnFilter').click()
@@ -156,16 +156,16 @@ dropdown_button.send_keys(Keys.ENTER)
 time.sleep(8)
 
 #Click filter button
-filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
 try:
+    filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter')
     filter_button.click()
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
 time.sleep(8)
 
 #Click "Export to Excel" button and move download to correct folder
-download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
 try:
+    download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
     download_button.click()
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel').click()
@@ -186,19 +186,20 @@ dropdown_button.send_keys(Keys.ENTER)
 time.sleep(2)
 
 #Click filter button
-filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
 try:
+    filter_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
     filter_button.click()
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnLoadFilter').click()
 time.sleep(10)
 
 #Click "Export to Excel" button and move download to correct folder
-download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
 try:
+    download_button=driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel')
     download_button.click()
 except:
     driver.find_element(By.NAME,'ctl00$MainContent$btnLoadExcel').click()
+
 move(attachment_destination)
 print("Sanibel report successfully downloaded")
 driver.close()
@@ -352,13 +353,13 @@ print("prepping email")
 #Open outlook and write email to Garrett and Buck, include subject, body, attachments
 outlook = win32com.client.Dispatch('outlook.application')
 mail = outlook.CreateItem(0)
-mail.To = 'whoopityscoop@scoopitywhoop.com; whoopdiscoop@scoopdiwhoop.com'
+mail.To = 'justgotpaid@today.com; gotmeapocketfullof@change.com'
 mail.Subject = 'Daily Debris Reports'
 mail.HTMLBody = '<h3>Greetings,<br><br>Please see the attached reports.<br><br>Sincerely,<br><br>FDEM Recovery Bureau</h3>'
 mail.Body = "Greetings,\r\n\r\nPlease see the attached reports.\r\n\r\nSincerely,\r\n\r\nFDEM Recovery Bureau"
 mail.Attachments.Add(Lee_PDF)
 mail.Attachments.Add(Myers_csv)
 mail.Attachments.Add(Sanibel_csv)
-mail.CC = 'someone@somewhere.com'
+mail.CC = 'youcanhaveyours@justgivememine.com'
 mail.Send()
 print("Email sent, task complete!")
